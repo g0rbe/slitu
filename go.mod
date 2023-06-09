@@ -1,3 +1,3 @@
 module github.com/g0rbe/slitu
 
-go 1.19
+go 1.20
