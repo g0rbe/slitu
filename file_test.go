@@ -76,3 +76,65 @@ func BenchmarkIsLineinFile(b *testing.B) {
 	}
 
 }
+
+func TestIsExists(t *testing.T) {
+
+	testName := "TestIsExists"
+
+	file, err := os.OpenFile(testName, os.O_CREATE|os.O_EXCL, 0600)
+	if err != nil {
+		t.Fatalf("Failed to create %s: %s\n", testName, err)
+	}
+
+	err = file.Close()
+	if err != nil {
+		t.Fatalf("Failed to close %s: %s\n", testName, err)
+	}
+
+	if !IsExists(testName) {
+		t.Fatalf("FAIL: %s should exists!\n", testName)
+	}
+
+	err = os.Remove(testName)
+	if err != nil {
+		t.Fatalf("Failed to remove %s: %s\n", testName, err)
+	}
+}
+
+func TestIsDir(t *testing.T) {
+
+	testName := "TestIsExists"
+
+	err := os.Mkdir(testName, 0600)
+	if err != nil {
+		t.Fatalf("Failed to create %s: %s\n", testName, err)
+	}
+
+	if !IsDir(testName) {
+		t.Fatalf("FAIL: %s should be a directory!\n", testName)
+	}
+
+	err = os.Remove(testName)
+	if err != nil {
+		t.Fatalf("Failed to remove %s: %s\n", testName, err)
+	}
+}
+
+func TestIsExistsAndDir(t *testing.T) {
+
+	testName := "TestIsExists"
+
+	err := os.Mkdir(testName, 0600)
+	if err != nil {
+		t.Fatalf("Failed to create %s: %s\n", testName, err)
+	}
+
+	if !IsExistsAndDir(testName) {
+		t.Fatalf("FAIL: %s should exists!\n", testName)
+	}
+
+	err = os.Remove(testName)
+	if err != nil {
+		t.Fatalf("Failed to remove %s: %s\n", testName, err)
+	}
+}

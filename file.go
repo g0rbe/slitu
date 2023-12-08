@@ -3,7 +3,10 @@ package slitu
 import (
 	"bufio"
 	"bytes"
+	"errors"
+	"fmt"
 	"io"
+	"io/fs"
 	"os"
 )
 
@@ -56,4 +59,47 @@ func CountFileLines(path string) (int, error) {
 			return count, err
 		}
 	}
+}
+
+// IsExists returns whether path is exists.
+//
+// It will panic is error is other than fs.ErrNotExist!
+func IsExists(path string) bool {
+
+	_, err := os.Stat(path)
+	if err != nil {
+
+		if errors.Is(err, fs.ErrNotExist) {
+			return false
+		}
+
+		panic(fmt.Sprintf("Failed to stat %s: %s", path, err))
+	}
+
+	return true
+}
+
+// IsDir returns whether path is a directory..
+//
+// It will panic is error is other than fs.ErrNotExist!
+func IsDir(path string) bool {
+
+	stat, err := os.Stat(path)
+	if err != nil {
+
+		if errors.Is(err, fs.ErrNotExist) {
+			return false
+		}
+
+		panic(fmt.Sprintf("Failed to stat %s: %s", path, err))
+	}
+
+	return stat.IsDir()
+}
+
+// IsExistsAndDir returns whether path is exists and a directory.
+//
+// It will panic is error is other than fs.ErrNotExist!
+func IsExistsAndDir(path string) bool {
+	return IsExists(path) && IsDir(path)
 }
