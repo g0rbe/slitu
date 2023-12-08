@@ -101,6 +101,48 @@ func TestIsExists(t *testing.T) {
 	}
 }
 
+func BenchmarkIsExistsTrue(b *testing.B) {
+
+	testName := "testfile.txt"
+
+	file, err := os.OpenFile(testName, os.O_CREATE|os.O_EXCL, 0600)
+	if err != nil {
+		b.Fatalf("Failed to create %s: %s\n", testName, err)
+	}
+
+	err = file.Close()
+	if err != nil {
+		b.Fatalf("Failed to close %s: %s\n", testName, err)
+	}
+
+	clean := func() {
+		err = os.Remove(testName)
+		if err != nil {
+			b.Fatalf("Failed to remove %s: %s\n", testName, err)
+		}
+	}
+	b.Cleanup(clean)
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		IsExists(testName)
+	}
+
+}
+
+func BenchmarkIsExistsFalse(b *testing.B) {
+
+	testName := "testfile.txt"
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		IsExists(testName)
+	}
+
+}
+
 func TestIsDir(t *testing.T) {
 
 	testName := "TestIsExists"
@@ -118,6 +160,43 @@ func TestIsDir(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to remove %s: %s\n", testName, err)
 	}
+}
+
+func BenchmarkIsDirTrue(b *testing.B) {
+
+	testName := "testdir"
+
+	err := os.Mkdir(testName, 0600)
+	if err != nil {
+		b.Fatalf("Failed to create %s: %s\n", testName, err)
+	}
+
+	clean := func() {
+		err = os.Remove(testName)
+		if err != nil {
+			b.Fatalf("Failed to remove %s: %s\n", testName, err)
+		}
+	}
+	b.Cleanup(clean)
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		IsDir(testName)
+	}
+
+}
+
+func BenchmarkIsDirFalse(b *testing.B) {
+
+	testName := "testdir"
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		IsDir(testName)
+	}
+
 }
 
 func TestIsExistsAndDir(t *testing.T) {

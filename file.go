@@ -8,6 +8,9 @@ import (
 	"io"
 	"io/fs"
 	"os"
+	"syscall"
+
+	"golang.org/x/sys/unix"
 )
 
 // IsLineInFile check whether s is exactly a line in file in path.
@@ -63,20 +66,33 @@ func CountFileLines(path string) (int, error) {
 
 // IsExists returns whether path is exists.
 //
-// It will panic is error is other than fs.ErrNotExist!
+// It will panic is error is other than "no such file or directory"!
 func IsExists(path string) bool {
 
-	_, err := os.Stat(path)
+	// _, err := os.Stat(path)
+	// if err != nil {
+
+	// 	if errors.Is(err, fs.ErrNotExist) {
+	// 		return false
+	// 	}
+
+	// 	panic(fmt.Sprintf("Failed to stat %s: %s", path, err))
+	// }
+
+	// return true
+
+	err := unix.Faccessat(unix.AT_FDCWD, path, syscall.F_OK, 0)
 	if err != nil {
 
-		if errors.Is(err, fs.ErrNotExist) {
+		if errors.Is(err, unix.ENOENT) {
 			return false
 		}
 
-		panic(fmt.Sprintf("Failed to stat %s: %s", path, err))
+		panic(fmt.Sprintf("faccessat failed for %s: %s", path, err))
 	}
 
 	return true
+
 }
 
 // IsDir returns whether path is a directory..
