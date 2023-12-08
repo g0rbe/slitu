@@ -79,7 +79,7 @@ func BenchmarkIsLineinFile(b *testing.B) {
 
 func TestIsExists(t *testing.T) {
 
-	testName := "TestIsExists"
+	testName := "testfile.txt"
 
 	file, err := os.OpenFile(testName, os.O_CREATE|os.O_EXCL, 0600)
 	if err != nil {
@@ -145,7 +145,7 @@ func BenchmarkIsExistsFalse(b *testing.B) {
 
 func TestIsDir(t *testing.T) {
 
-	testName := "TestIsExists"
+	testName := "testdir"
 
 	err := os.Mkdir(testName, 0600)
 	if err != nil {
